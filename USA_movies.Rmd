@@ -1,0 +1,77 @@
+---
+title: "USA_movies"
+author: "Chidozie_Chukwumba"
+date: "6/12/2021"
+output:
+  rmarkdown::html_document:
+    theme: cerulean
+    highlight: breezedark
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.width=12, fig.height=8)
+
+library(tidyverse)
+
+movies <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-09/movies.csv')
+
+```
+
+
+### Dataset
+
+```{r movies}
+head(movies)
+```
+
+
+### Plot
+
+
+```{r dataset, echo=TRUE}
+
+# movies %>%
+# count(rated) %>%
+#  distinct
+
+
+ratings <- c("PG", "PG-13", "R") 
+colors <- c("red", "dodgerblue4")
+
+# Use movies dataset.
+movies %>%
+  # Subset movies to only certain ratings and from "USA".
+  filter(rated %in% ratings, country == "USA") %>%
+  # Only keep the metascore, rated, and binary columns.
+  select(metascore, rated, binary) -> usa_movies
+
+# Use usa_movies dataset and pipe directly into ggplot.
+usa_movies %>% 
+  ggplot(aes(x = rated,
+             y = metascore,
+             fill = binary)) +
+  labs(x = "Rating",
+       y = "Metascore",
+       title = "Movies in the US") + 
+  # Change theme to classic.
+  theme_classic() + 
+  theme(axis.text = element_text(size = rel(0.9)), # both axes 
+        axis.text.x = element_text(color = "gray0"), # only the x!
+        axis.text.y = element_text(color = "gray0")) +  # only the y!
+  # Change the axis thickness and color.  
+  theme(axis.line = element_line(size = rel(2), color = "dodgerblue4")) + 
+  # Change the background color of the plot
+  theme(plot.background = element_rect(color = "red",
+                                       size = 1.5)) + 
+  # Manually change the color of the legends.
+  scale_fill_manual(values=c(colors)) +
+  # create boxplot with a "gray0" outline.
+  geom_boxplot(color = "gray0") -> usa_movies_plot
+
+print(usa_movies_plot)
+
+```
+
+
